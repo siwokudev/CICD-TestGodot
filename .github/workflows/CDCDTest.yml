@@ -65,15 +65,6 @@ jobs:
         relative_project_path: ./
         archive_output: true
 
-      # https://github.com/ncipollo/release-action
-    - name: create release
-      uses: ncipollo/release-action@v1.18.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        generateReleaseNotes: true
-        tag: ${{ github.ref_name }}
-        artifacts: ${{ steps.export.outputs.archive_directory }}/*
-
     - name: Setup butler
       uses: remarkablegames/setup-butler@v2
 
@@ -86,3 +77,12 @@ jobs:
       run: butler push /home/runner/.local/share/godot/archives/CICD-WebExport.zip ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+
+          # https://github.com/ncipollo/release-action
+    - name: create release
+      uses: ncipollo/release-action@v1.18.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        generateReleaseNotes: true
+        tag: ${{ github.ref_name }}
+        artifacts: ${{ steps.export.outputs.archive_directory }}/*
