@@ -74,15 +74,13 @@ jobs:
       id: find_web
       run: | 
         echo ${{steps.export.outputs.build_directory}}
-        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
-        echo ${{ folder }}
+        echo $(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
 
     - name: Set web export directory
       id: web_export
       run: |
         folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
         echo "web_folder=$folder" >> $GITHUB_OUTPUT
-      
       
       # https://itch.io/docs/butler/pushing.html
     - name: Upload to itch
