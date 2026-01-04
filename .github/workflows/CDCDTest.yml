@@ -5,10 +5,13 @@ name: CI-GodotExport
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main", "dev", "master"]
+
+env: 
+  BLENDER_VERSION: "4.5" 
+  GODOT_GREATEST_VERSION: "4"
+  GODOT_VERSION: "4.5.1"
 
 jobs:
   # job id, can be anything
@@ -25,6 +28,28 @@ jobs:
       # your project is available for Godot to export
     - name: checkout
       uses: actions/checkout@v6.0.1
+
+    - name: Setup Blender 
+      id: blender 
+      uses: Moguri/setup-blender@v1
+      with: 
+        blender-version: ${{ env.BLENDER_VERSION }}
+
+    - name: Configure Godot Blender path
+      run: |
+        mkdir -p ~/.config/godot
+        cat <<EOF > ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+        [gd_resource type="EditorSettings" format=3]
+
+        [resource]
+        filesystem/import/blender/blender_path="${{ steps.blender.outputs.blender-path }}/blender"
+        EOF
+
+    - name: Show Godot editor settings
+      run: |
+        echo "=== Contents of editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres ==="
+        cat ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+
   
     - name: export game
       id: export
@@ -32,12 +57,11 @@ jobs:
       uses: firebelley/godot-export@v7.0.0
       with:
         # Defining all the required inputs
-        godot_executable_download_url: https://downloads.godotengine.org/?version=4.5.1&flavor=stable&slug=linux.x86_64.zip&platform=linux.64
-        godot_export_templates_download_url: https://downloads.godotengine.org/?version=4.5.1&flavor=stable&slug=export_templates.tpz&platform=templates
+        godot_executable_download_url: https://downloads.godotengine.org/?version=${{ env.GODOT_VERSION }}&flavor=stable&slug=linux.x86_64.zip&platform=linux.64
+        godot_export_templates_download_url: https://downloads.godotengine.org/?version=${{ env.GODOT_VERSION }}&flavor=stable&slug=export_templates.tpz&platform=templates
         relative_project_path: ./
         archive_output: true
 
-      # This release action has worked well for me. However, you can most likely use any release action of your choosing.
       # https://github.com/ncipollo/release-action
     - name: create release
       uses: ncipollo/release-action@v1.18.0
