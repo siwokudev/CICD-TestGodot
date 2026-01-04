@@ -13,8 +13,9 @@ env:
   BLENDER_VERSION: ${{ vars.BLENDER_VERSION }}
   GODOT_GREATEST_VERSION: ${{ vars.GODOT_GREATEST_VERSION }}
   GODOT_VERSION: ${{ vars.GODOT_VERSION }}
+  GODOT_CACHED : ${{ vars.GODOT_CACHED }}
   ITCH_PROJECT : ${{ vars.ITCH_PROJECT }}
-  ITCH_WEB_CHANEL : ${{ vars.ITCH_WEB_CHANNEL }}
+  ITCH_WEB_CHANEL : ${{ vars.ITCH_WEB_CHANEL }}
 
 jobs:
   # job id, can be anything
@@ -65,7 +66,7 @@ jobs:
         godot_export_templates_download_url: https://downloads.godotengine.org/?version=${{ env.GODOT_VERSION }}&flavor=stable&slug=export_templates.tpz&platform=templates
         relative_project_path: ./
         archive_output: true
-        cache: true
+        cache: ${{ env.GODOT_CACHED }}
 
     - name: Setup butler
       uses: remarkablegames/setup-butler@v2
