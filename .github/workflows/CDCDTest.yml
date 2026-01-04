@@ -69,8 +69,9 @@ jobs:
       uses: remarkablegames/setup-butler@v2
 
 
-    - name: Show export directories
-      run: echo ${{steps.export.outputs.build_directory}}
+    - name: Show export directories 
+      run: | 
+        echo $(find "${{steps.export.outputs.build_directory}}" -type d -name "*web*" | head -n 1)
       
       # https://itch.io/docs/butler/pushing.html
     - name: Upload to itch.io
