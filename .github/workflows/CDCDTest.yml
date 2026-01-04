@@ -79,7 +79,7 @@ jobs:
       
       # https://itch.io/docs/butler/pushing.html
     - name: Upload to itch
-      run: butler push /home/runner/.local/share/godot/builds/CICD-WebExport/ ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
+      run: butler push ${{ steps.web_export.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
 
