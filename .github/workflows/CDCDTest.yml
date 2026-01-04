@@ -72,7 +72,7 @@ jobs:
     - name: Show export directories
       id: find_web
       run: | 
-        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -name "*web*" | head -n 1) 
+        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
         echo "web_folder=$folder" >> $GITHUB_OUTPUT
       
       # https://itch.io/docs/butler/pushing.html
