@@ -12,6 +12,8 @@ env:
   BLENDER_VERSION: "4.5" 
   GODOT_GREATEST_VERSION: "4"
   GODOT_VERSION: "4.5.1"
+  ITCH_PROJECT : "siwoku/cicdtest"
+  ITCH_CHANEL : "HTML5"
 
 jobs:
   # job id, can be anything
@@ -71,3 +73,16 @@ jobs:
         generateReleaseNotes: true
         tag: ${{ github.ref_name }}
         artifacts: ${{ steps.export.outputs.archive_directory }}/*
+
+    - name: Setup butler
+      uses: remarkablegames/setup-butler@v2
+
+
+    - name: Show export directories
+      run: echo ${{steps.export.outputs.build_directory}}
+      
+      # https://itch.io/docs/butler/pushing.html
+    - name: Upload to itch.io
+      run: butler push /home/runner/.local/share/godot/archives/CICD-WebExport.zip ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
+      env:
+        BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
