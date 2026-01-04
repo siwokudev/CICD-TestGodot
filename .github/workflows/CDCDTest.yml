@@ -76,7 +76,7 @@ jobs:
         echo "web_folder=$folder" >> $GITHUB_OUTPUT
       
       # https://itch.io/docs/butler/pushing.html
-    - name: Upload to itch.io
+    - name: Upload to itch
       run: butler push ${{step.find_web.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
