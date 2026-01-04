@@ -69,17 +69,12 @@ jobs:
     - name: Setup butler
       uses: remarkablegames/setup-butler@v2
 
-
-    - name: Show export directories
-      id: find_web
-      run: | 
-        echo ${{steps.export.outputs.build_directory}}
-        echo $(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
-
     - name: Set web export directory
       id: web_export
       run: |
-        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1) 
+        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1)
+        folder=${folder%/}/
+        echo "found web dir: $folder"
         echo "web_folder=$folder" >> $GITHUB_OUTPUT
       
       # https://itch.io/docs/butler/pushing.html
