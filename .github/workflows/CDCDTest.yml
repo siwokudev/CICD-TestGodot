@@ -8,10 +8,14 @@ on:
   pull_request:
     branches: [ "main", "dev", "master"]
 
+#set any of this in repository variables
 env: 
-  BLENDER_VERSION: "4.5" 
-  GODOT_GREATEST_VERSION: "4"
-  GODOT_VERSION: "4.5.1"
+  BLENDER_VERSION: ${{ vars.BLENDER_VERSION }}
+  GODOT_GREATEST_VERSION: ${{ vars.GODOT_GREATEST_VERSION }}
+  GODOT_VERSION: ${{ vars.GODOT_VERSION }}
+  GODOT_CACHED : ${{ vars.GODOT_CACHED }}
+  ITCH_PROJECT : ${{ vars.ITCH_PROJECT }}
+  ITCH_WEB_CHANEL : ${{ vars.ITCH_WEB_CHANEL }}
 
 jobs:
   # job id, can be anything
@@ -29,26 +33,27 @@ jobs:
     - name: checkout
       uses: actions/checkout@v6.0.1
 
-    - name: Setup Blender 
-      id: blender 
-      uses: Moguri/setup-blender@v1
-      with: 
-        blender-version: ${{ env.BLENDER_VERSION }}
+#    # uncomment this if blender if .blend files are used
+#    - name: Setup Blender 
+#      id: blender 
+#      uses: Moguri/setup-blender@v1
+#      with: 
+#        blender-version: ${{ env.BLENDER_VERSION }}
 
-    - name: Configure Godot Blender path
-      run: |
-        mkdir -p ~/.config/godot
-        cat <<EOF > ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
-        [gd_resource type="EditorSettings" format=3]
+#    - name: Configure Godot Blender path
+#      run: |
+#        mkdir -p ~/.config/godot
+#        cat <<EOF > ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+#        [gd_resource type="EditorSettings" format=3]
+#
+#        [resource]
+#        filesystem/import/blender/blender_path="${{ steps.blender.outputs.blender-path }}/blender"
+#        EOF
 
-        [resource]
-        filesystem/import/blender/blender_path="${{ steps.blender.outputs.blender-path }}/blender"
-        EOF
-
-    - name: Show Godot editor settings
-      run: |
-        echo "=== Contents of editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres ==="
-        cat ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+#    - name: Show Godot editor settings
+#      run: |
+#        echo "=== Contents of editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres ==="
+#        cat ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
 
   
     - name: export game
@@ -61,8 +66,26 @@ jobs:
         godot_export_templates_download_url: https://downloads.godotengine.org/?version=${{ env.GODOT_VERSION }}&flavor=stable&slug=export_templates.tpz&platform=templates
         relative_project_path: ./
         archive_output: true
+        cache: ${{ env.GODOT_CACHED }}
 
-      # https://github.com/ncipollo/release-action
+    - name: Setup butler
+      uses: remarkablegames/setup-butler@v2
+
+    - name: Set web export directory
+      id: web_export
+      run: |
+        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -iname "*web*" | head -n 1)
+        folder=${folder%/}/
+        echo "found web dir: $folder"
+        echo "web_folder=$folder" >> $GITHUB_OUTPUT
+      
+      # https://itch.io/docs/butler/pushing.html
+    - name: Upload to itch
+      run: butler push ${{ steps.web_export.outputs.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_WEB_CHANEL }}
+      env:
+        BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+
+          # https://github.com/ncipollo/release-action
     - name: create release
       uses: ncipollo/release-action@v1.18.0
       with:

@@ -11,5 +11,6 @@ config_version=5
 [application]
 
 config/name="CICITest"
+run/main_scene="uid://bwb03p4y2cjjl"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
