@@ -8,12 +8,13 @@ on:
   pull_request:
     branches: [ "main", "dev", "master"]
 
+#set any of this in repository variables
 env: 
-  BLENDER_VERSION: "4.5" 
-  GODOT_GREATEST_VERSION: "4"
-  GODOT_VERSION: "4.5.1"
-  ITCH_PROJECT : "siwoku/cicdtest"
-  ITCH_CHANEL : "HTML5"
+  BLENDER_VERSION: ${{ vars.BLENDER_VERSION }}
+  GODOT_GREATEST_VERSION: ${{ vars.GODOT_GREATEST_VERSION }}
+  GODOT_VERSION: ${{ vars.GODOT_VERSION }}
+  ITCH_PROJECT : ${{ vars.ITCH_PROJECT }}
+  ITCH_WEB_CHANEL : ${{ vars.ITCH_WEB_CHANNEL }}
 
 jobs:
   # job id, can be anything
@@ -79,7 +80,7 @@ jobs:
       
       # https://itch.io/docs/butler/pushing.html
     - name: Upload to itch
-      run: butler push ${{ steps.web_export.outputs.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
+      run: butler push ${{ steps.web_export.outputs.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_WEB_CHANEL }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
 
