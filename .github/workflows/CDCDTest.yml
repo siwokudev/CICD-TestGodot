@@ -29,26 +29,27 @@ jobs:
     - name: checkout
       uses: actions/checkout@v6.0.1
 
-    - name: Setup Blender 
-      id: blender 
-      uses: Moguri/setup-blender@v1
-      with: 
-        blender-version: ${{ env.BLENDER_VERSION }}
+#    # uncomment this if blender if .blend files are used
+#    - name: Setup Blender 
+#      id: blender 
+#      uses: Moguri/setup-blender@v1
+#      with: 
+#        blender-version: ${{ env.BLENDER_VERSION }}
 
-    - name: Configure Godot Blender path
-      run: |
-        mkdir -p ~/.config/godot
-        cat <<EOF > ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
-        [gd_resource type="EditorSettings" format=3]
+#    - name: Configure Godot Blender path
+#      run: |
+#        mkdir -p ~/.config/godot
+#        cat <<EOF > ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+#        [gd_resource type="EditorSettings" format=3]
+#
+#        [resource]
+#        filesystem/import/blender/blender_path="${{ steps.blender.outputs.blender-path }}/blender"
+#        EOF
 
-        [resource]
-        filesystem/import/blender/blender_path="${{ steps.blender.outputs.blender-path }}/blender"
-        EOF
-
-    - name: Show Godot editor settings
-      run: |
-        echo "=== Contents of editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres ==="
-        cat ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
+#    - name: Show Godot editor settings
+#      run: |
+#        echo "=== Contents of editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres ==="
+#        cat ~/.config/godot/editor_settings-${{ env.GODOT_GREATEST_VERSION }}.tres
 
   
     - name: export game
