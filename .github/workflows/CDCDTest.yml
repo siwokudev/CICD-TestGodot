@@ -69,13 +69,15 @@ jobs:
       uses: remarkablegames/setup-butler@v2
 
 
-    - name: Show export directories 
+    - name: Show export directories
+      id: find_web
       run: | 
-        echo $(find "${{steps.export.outputs.build_directory}}" -type d -name "*web*" | head -n 1)
+        folder=$(find "${{steps.export.outputs.build_directory}}" -type d -name "*web*" | head -n 1) 
+        echo "web_folder=$folder" >> $GITHUB_OUTPUT
       
       # https://itch.io/docs/butler/pushing.html
     - name: Upload to itch.io
-      run: butler push /home/runner/.local/share/godot/archives/CICD-WebExport.zip ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
+      run: butler push ${{step.find_web.web_folder}} ${{ env.ITCH_PROJECT }}:${{ env.ITCH_CHANEL }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
 
